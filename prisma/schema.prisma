@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Remedy {
+  id              Int           @id @default(autoincrement())
+  name            String
+  manufacturer    Manufacturer  @relation(fields: [manufacturer_id], references: [id])
+  manufacturer_id Int
+  form            Form          @relation(fields: [form_id], references: [id])
+  form_id         Int
+  amount          Int
+  category        Category      @relation(fields: [category_id], references: [id])
+  category_id     Int
+  photo           String?
+  formulations    Formulation[]
+  prices          Prices[]
+  ordered         Ordered[]
+}
+
+model Ingredients {
+  id           Int           @id @default(autoincrement())
+  name         String
+  formulations Formulation[]
+}
+
+model Formulation {
+  id            Int         @id @default(autoincrement())
+  remedy        Remedy      @relation(fields: [remedy_id], references: [id])
+  remedy_id     Int
+  ingredient    Ingredients @relation(fields: [ingredient_id], references: [id])
+  ingredient_id Int
+  doze          Float
+  unit          String
+
+  @@unique([remedy_id, ingredient_id])
+}
+
+model Form {
+  id       Int      @id @default(autoincrement())
+  name     String
+  remedies Remedy[]
+}
+
+model Category {
+  id       Int      @id @default(autoincrement())
+  name     String
+  remedies Remedy[]
+}
+
+model Manufacturer {
+  id       Int      @id @default(autoincrement())
+  name     String
+  remedies Remedy[]
+}
+
+model Pharmacies {
+  id         Int       @id @default(autoincrement())
+  name       String
+  city       String
+  street     String
+  house      String
+  ratio      Float
+  work_hours String
+  prices     Prices[]
+  ordered    Ordered[]
+}
+
+model Prices {
+  id          Int        @id @default(autoincrement())
+  remedy      Remedy     @relation(fields: [remedy_id], references: [id])
+  remedy_id   Int
+  pharmacy    Pharmacies @relation(fields: [pharmacy_id], references: [id])
+  pharmacy_id Int
+  price       Float
+  amount      Int
+}
+
+model Orders {
+  id       Int       @id @default(autoincrement())
+  number   String    @unique
+  datetime DateTime
+  user     Users?    @relation(fields: [user_id], references: [id])
+  user_id  Int?
+  phone    String
+  email    String
+  city     String
+  street   String
+  house    String
+  apart    String
+  status   Status
+  ordered  Ordered[]
+}
+
+enum Status {
+  CART
+  ORDERED
+  PROCESSING
+  READY
+  DELIVERING
+  DONE
+}
+
+model Ordered {
+  id           Int        @id @default(autoincrement())
+  order        Orders     @relation(fields: [order_id], references: [id])
+  order_id     Int
+  remedy       Remedy     @relation(fields: [remedy_id], references: [id])
+  remedy_id    Int
+  amount       Int
+  price        Float
+  pharmacy     Pharmacies @relation(fields: [pharmacy_id], references: [id])
+  pharmacy_id  Int
+  prescription String?
+}
+
+model Users {
+  id     Int      @id @default(autoincrement())
+  name   String
+  email  String   @unique
+  passwd String
+  phone  String?
+  city   String?
+  street String?
+  house  String?
+  apart  String?
+  orders Orders[]
+}
