@@ -1,0 +1,77 @@
+[
+    {
+        "Commercial name": "Amoxicillin",
+        "Manufacturer": "Pfizer",
+        "Form": "Capsules",
+        "Amount in package": 20,
+        "Category": "Antibiotics",
+        "image URL": "",
+        "Active ingredients": [
+            {
+                "Active ingredient": "Amoxicillin",
+                "Doze": 500,
+                "unit": "mg"
+            }
+        ]
+    },
+    {
+        "Commercial name": "Paracetamol",
+        "Manufacturer": "GlaxoSmithKline",
+        "Form": "Tablets",
+        "Amount in package": 30,
+        "Category": "Pain relievers",
+        "image URL": "",
+        "Active ingredients": [
+            {
+                "Active ingredient": "Paracetamol",
+                "Doze": 500,
+                "unit": "mg"
+            }
+        ]
+    },
+    {
+        "Commercial name": "Metformin",
+        "Manufacturer": "Novartis",
+        "Form": "Tablets",
+        "Amount in package": 60,
+        "Category": "Endocrinological",
+        "image URL": "",
+        "Active ingredients": [
+            {
+                "Active ingredient": "Metformin",
+                "Doze": 500,
+                "unit": "mg"
+            }
+        ]
+    },
+    {
+        "Commercial name": "Ibuprofen",
+        "Manufacturer": "Johnson & Johnson",
+        "Form": "Syrup",
+        "Amount in package": 100,
+        "Category": "Pain relievers",
+        "image URL": "",
+        "Active ingredients": [
+            {
+                "Active ingredient": "Ibuprofen",
+                "Doze": 100,
+                "unit": "mg"
+            }
+        ]
+    },
+    {
+        "Commercial name": "Lisinopril",
+        "Manufacturer": "AstraZeneca",
+        "Form": "Tablets",
+        "Amount in package": 30,
+        "Category": "Cardiovascular",
+        "image URL": "",
+        "Active ingredients": [
+            {
+                "Active ingredient": "Lisinopril",
+                "Doze": 10,
+                "unit": "mg"
+            }
+        ]
+    }
+]
