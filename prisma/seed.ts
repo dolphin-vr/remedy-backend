@@ -5,6 +5,21 @@ import medicines from '../assets/medications5.json';
 import fs from 'fs/promises';
 import path from 'path';
 
+interface Formulation {
+  'Active ingredient': string;
+  Doze: number;
+  unit: string;
+}
+interface Remedy {
+  'Commercial name': string;
+  Manufacturer: string;
+  Form: string;
+  'Amount in package': number;
+  Category: string;
+  'image URL': string;
+  'Active ingredients': Formulation[];
+}
+
 const writeList = (fn: string, text: string) => {
   const filePath = path.resolve('assets', `${fn}.txt`);
   fs.writeFile(filePath, text);
@@ -13,7 +28,7 @@ const writeList = (fn: string, text: string) => {
 const databaseService = new DatabaseService();
 const remedyService = new RemedyService(databaseService);
 
-const manufacturer = async () => {
+const manufacturer = () => {
   const arrManufacturers = [...new Set(medicines.map(el => el['Manufacturer']))];
   arrManufacturers.forEach(async name => await remedyService.addManufacturer({ name }));
 
@@ -21,7 +36,7 @@ const manufacturer = async () => {
   writeList('manufacturer', text);
 };
 
-const category = async () => {
+const category = () => {
   const arrCategory = [...new Set(medicines.map(el => el['Category']))];
   arrCategory.forEach(async name => await remedyService.addCategory({ name }));
 
@@ -29,7 +44,7 @@ const category = async () => {
   writeList('category', text);
 };
 
-const form = async () => {
+const form = () => {
   const arrForm = [...new Set(medicines.map(el => el['Form']))];
   arrForm.forEach(async name => await remedyService.addForm({ name }));
 
@@ -37,7 +52,7 @@ const form = async () => {
   writeList('form', text);
 };
 
-const ingredients = async () => {
+const ingredients = () => {
   const arrAll: string[] = [];
   medicines.forEach(el => el['Active ingredients'].forEach(a => arrAll.push(a['Active ingredient'])));
   const arrIngredients = [...new Set(arrAll)];
@@ -47,37 +62,42 @@ const ingredients = async () => {
   writeList('ingredients', text);
 };
 
-const remedies = async () => {
+const remedies = () => {
   medicines.forEach(async el => {
     const manufacturer = await remedyService.findManufacturer({ name: el['Manufacturer'] });
     const form = await remedyService.findForm({ name: el['Form'] });
     const category = await remedyService.findCategory({ name: el['Category'] });
-    const remedy = await remedyService.addRemedy({
-      name: el['Commercial name'],
-      amount: el['Amount in package'],
-      photo: el['image URL'],
-      manufacturer: { connect: { id: manufacturer.id } },
-      form: { connect: { id: form.id } },
-      category: { connect: { id: category.id } },
-    });
-    el['Active ingredients'].forEach(async a => {
-      const ingredient = await remedyService.findIngredient({ name: a['Active ingredient'] });
-      await remedyService.addFormulation({
-        remedy: { connect: { id: remedy.id } },
-        ingredient: { connect: { id: ingredient.id } },
-        doze: a['Doze'],
-        unit: a['unit'],
+
+    if (manufacturer && form && category) {
+      const remedy = await remedyService.addRemedy({
+        name: el['Commercial name'],
+        amount: el['Amount in package'],
+        photo: el['image URL'],
+        manufacturer: { connect: { id: manufacturer.id } },
+        form: { connect: { id: form.id } },
+        category: { connect: { id: category.id } },
       });
-    });
+      el['Active ingredients'].forEach(async a => {
+        const ingredient = await remedyService.findIngredient({ name: a['Active ingredient'] });
+        if (ingredient) {
+          await remedyService.addFormulation({
+            remedy: { connect: { id: remedy.id } },
+            ingredient: { connect: { id: ingredient.id } },
+            doze: a['Doze'],
+            unit: a['unit'],
+          });
+        }
+      });
+    }
   });
 };
 
-async function main() {
-  await manufacturer();
-  await category();
-  await form();
-  await ingredients();
-  await remedies();
+function main() {
+  manufacturer();
+  category();
+  form();
+  ingredients();
+  remedies();
 }
 
-await main();
+main();
