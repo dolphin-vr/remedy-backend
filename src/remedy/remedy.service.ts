@@ -1,26 +1,68 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRemedyDto } from './dto/create-remedy.dto';
-import { UpdateRemedyDto } from './dto/update-remedy.dto';
+import { DatabaseService } from 'src/database/database.service';
+import { Prisma } from '@prisma/client';
+import { FindRemedyDto } from './dto/find-remedy.dto';
 
 @Injectable()
 export class RemedyService {
-  create(createRemedyDto: CreateRemedyDto) {
-    return 'This action adds a new remedy';
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async addRemedy(createRemedyDto: Prisma.RemedyCreateInput) {
+    return this.databaseService.remedy.create({ data: createRemedyDto });
   }
 
-  findAll() {
-    return `This action returns all remedy`;
+  async findRemedy(query: FindRemedyDto) {
+    const { name, category } = query;
+    return this.databaseService.remedy.findMany({
+      where: { ...(name && { name: { contains: name } }), ...(category && { category: { id: category } }) },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} remedy`;
+  async findOneRemedy(id: number) {
+    return this.databaseService.remedy.findUnique({ where: { id } });
   }
 
-  update(id: number, updateRemedyDto: UpdateRemedyDto) {
-    return `This action updates a #${id} remedy`;
+  async updateRemedy(id: number, updateRemedyDto: Prisma.RemedyUpdateInput) {
+    return this.databaseService.remedy.update({ where: { id }, data: updateRemedyDto });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} remedy`;
+  async removeRemedy(id: number) {
+    return this.databaseService.remedy.delete({ where: { id } });
+  }
+
+  async addManufacturer(addManufacturerDto: Prisma.ManufacturerCreateInput) {
+    return this.databaseService.manufacturer.create({ data: addManufacturerDto });
+  }
+
+  async findManufacturer(findManufacturerDto: Prisma.ManufacturerWhereInput) {
+    return this.databaseService.manufacturer.findFirst({ where: findManufacturerDto });
+  }
+
+  async addCategory(addCategoryDto: Prisma.CategoryCreateInput) {
+    return this.databaseService.category.create({ data: addCategoryDto });
+  }
+
+  async findCategory(findCategoryDto: Prisma.CategoryWhereInput) {
+    return this.databaseService.category.findFirst({ where: findCategoryDto });
+  }
+
+  async addForm(addFormDto: Prisma.FormCreateInput) {
+    return this.databaseService.form.create({ data: addFormDto });
+  }
+
+  async findForm(findFormDto: Prisma.FormWhereInput) {
+    return this.databaseService.form.findFirst({ where: findFormDto });
+  }
+
+  async addIngredient(addIngredientDto: Prisma.IngredientsCreateInput) {
+    return this.databaseService.ingredients.create({ data: addIngredientDto });
+  }
+
+  async findIngredient(findIngredientDto: Prisma.IngredientsWhereInput) {
+    return this.databaseService.ingredients.findFirst({ where: findIngredientDto });
+  }
+
+  async addFormulation(addFormulationDto: Prisma.FormulationCreateInput) {
+    return this.databaseService.formulation.create({ data: addFormulationDto });
   }
 }
